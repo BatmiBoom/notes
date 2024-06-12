@@ -1,3 +1,91 @@
+- [GO](#GO)
+  - [Comparing Go's Speed](#Comparing Go's Speed)
+  - [The compilation process](#The compilation process)
+  - [Structure of a go program](#Structure of a go program)
+  - [Go is strongly typed](#Go is strongly typed)
+  - [Go programs are easy on memory](#Go programs are easy on memory)
+    - [COMPARISON](#COMPARISON)
+  - [Basic Types](#Basic Types)
+    - [Bool](#Bool)
+    - [String](#String)
+      - [Concatenate Strings](#Concatenate Strings)
+    - [Integer](#Integer)
+  - [Declaring a Variable](#Declaring a Variable)
+    - [Short Variable Declaration](#Short Variable Declaration)
+  - [Type Inference](#Type Inference)
+  - [Same Line Declarations](#Same Line Declarations)
+  - [Type Sizes](#Type Sizes)
+  - [Prefer "default" types](#Prefer "default" types)
+  - [WHEN SHOULD I USE A MORE SPECIFIC TYPE?](#WHEN SHOULD I USE A MORE SPECIFIC TYPE?)
+  - [Constants](#Constants)
+    - [Computed Constants](#Computed Constants)
+  - [Formatting Strings in Go](#Formatting Strings in Go)
+    - [Default Representation](#Default Representation)
+    - [String](#String)
+    - [Integer](#Integer)
+    - [Float](#Float)
+  - [Conditionals](#Conditionals)
+    - [The initial statement of an if block](#The initial statement of an if block)
+  - [Functions](#Functions)
+    - [Multiple Parameters](#Multiple Parameters)
+    - [Passing variables by value](#Passing variables by value)
+    - [Ignoring return values](#Ignoring return values)
+    - [Named return values](#Named return values)
+      - [The benefits of named returns](#The benefits of named returns)
+    - [Explicit Returns](#Explicit Returns)
+    - [Early Returns](#Early Returns)
+  - [Structs](#Structs)
+    - [Nested Structs](#Nested Structs)
+    - [Anonymous structs](#Anonymous structs)
+    - [Embedded structs](#Embedded structs)
+    - [Struct methods](#Struct methods)
+  - [Interfaces](#Interfaces)
+    - [Interface Implementation](#Interface Implementation)
+    - [Multiple Interfaces](#Multiple Interfaces)
+    - [Name your interface arguments](#Name your interface arguments)
+  - [Type assertions](#Type assertions)
+  - [Type Switches](#Type Switches)
+  - [Clean Interfaces](#Clean Interfaces)
+    - [The Empty Interface](#The Empty Interface)
+      - [Zero Value of an interface](#Zero Value of an interface)
+      - [Interfaces on pointers](#Interfaces on pointers)
+  - [The Error Interface](#The Error Interface)
+    - [The errors package](#The errors package)
+  - [Loops](#Loops)
+    - [Omitting conditions from a FOR LOOP](#Omitting conditions from a FOR LOOP)
+  - [Continue & Break](#Continue & Break)
+  - [Arrays](#Arrays)
+  - [Slices](#Slices)
+    - [Make](#Make)
+    - [VARIADIC](#VARIADIC)
+    - [SPREAD OPERATOR](#SPREAD OPERATOR)
+    - [APPEND](#APPEND)
+    - [SLICE OF SLICES](#SLICE OF SLICES)
+    - [Tricky Slices](#Tricky Slices)
+    - [RANGE](#RANGE)
+  - [MAPS](#MAPS)
+    - [MUTATIONS](#MUTATIONS)
+    - [KEY TYPES](#KEY TYPES)
+    - [MAP LITERALS](#MAP LITERALS)
+    - [MISSING KEYS](#MISSING KEYS)
+    - [DELETING MAP ENTRIES](#DELETING MAP ENTRIES)
+    - [NESTED](#NESTED)
+  - [FIRST CLASS AND HIGHER ORDER FUNCTIONS](#FIRST CLASS AND HIGHER ORDER FUNCTIONS)
+    - [CURRYING](#CURRYING)
+    - [DEFER](#DEFER)
+    - [CLOSURES](#CLOSURES)
+    - [ANONYMOUS FUNCTIONS](#ANONYMOUS FUNCTIONS)
+    - [POINTERS](#POINTERS)
+    - [NIL POINTERS](#NIL POINTERS)
+    - [POINTER RECEIVERS](#POINTER RECEIVERS)
+  - [PACKAGES](#PACKAGES)
+  - [CONCURRENCY](#CONCURRENCY)
+  - [MUTEXES](#MUTEXES)
+  - [GENERICS](#GENERICS)
+  - [PROVERBS](#PROVERBS)
+
+# GO
+
 Is **fast**, **simple** and **productive**.
 
 Generally speaking, compiled languages run much faster than interpreted languages, and Go is no exception.
@@ -1494,3 +1582,437 @@ for i, fruit := range fruits {
 // 1 banana
 // 2 grape
 ```
+
+## MAPS
+
+Maps are similar to JS objects and Python dicts.
+
+Maps are a data structure that provides key->value mapping.
+
+The zero value of a map is `nil`
+
+We can create a map by using a literal or by using the`make()` function:
+
+```go
+ages:= make(map[string]int)
+ages["John"] = 37
+ages["Jorge"] = 21
+ages["Mary"] = 24
+
+ages = map[string]int{
+    "John" : 37,
+    "Mary" : 21
+}
+```
+
+The `len()` function works on a map, it returns the total number of key/value pairs.
+
+### MUTATIONS
+
+**INSERT A ELEMENT**
+
+`m[key] = elem`
+
+**GET AN ELEMENT**
+
+`elem = m[key]`
+
+**DELETE AN ELEMENT**
+
+`delete(m. key)`
+
+**CHECK IF A KEY EXISTS**
+
+`elem, ok := m[key]`
+
+- If `key` is in `m`, then `ok` is `true`. If not, `ok` is `false`
+- If `key` is not in the map, then `elem` is the zero value for the map's element type.
+
+### KEY TYPES
+
+Any type can be used as the value in a map, but _keys_ are more restrictive.
+
+As mentioned earlier, map keys may be of any type that is comparable. The language spec defines this precisely, but in short, comparable types are boolean, numeric, string, pointer, channel, and interface types, and structs or arrays that contain only those types. Notably absent from the list are slices, maps, and functions; these types cannot be compared using ==, and may not be used as map keys.
+
+It's obvious that `strings`, `ints`, and other basic types should be available as map keys, but perhaps unexpected are `struct` keys. `Struct` can be used to key data by multiple dimensions. For example, this map of maps could be used to tally web page hits by country:
+
+`hits := make(map[string]map[string]int)`
+
+This is a map of string to (map of string to int). Each key of the outer map is the path to a web page with its own inner map. Each inner map key is a two-letter country code. This expression retrieves the number of times an Australian has loaded the documentation page:
+
+`n := hits["/doc/"]["au"]`
+
+Unfortunately, this approach becomes unwieldy when adding data, as for any given outer key you must check if the inner map exists, and create it if needed:
+
+```go
+func add(m map[string]map[string]int, path, country string) {
+    mm, ok := m[path]
+    if !ok {
+        mm = make(map[string]int)
+        m[path] = mm
+    }
+    mm[country]++
+}
+add(hits, "/doc/", "au")
+```
+
+On the other hand, a design that uses a single map with a struct key does away with all that complexity:
+
+```go
+type Key struct {
+    Path, Country string
+}
+hits := make(map[Key]int)
+```
+
+When a Vietnamese person visits the home page, incrementing (and possibly creating) the appropriate counter is a one-liner:
+
+```go
+hist[Key{"/ref/spec"}]
+```
+
+**LIKE SLICES, MAPS HOLD REFERENCES**
+
+Like slices, maps hold references to an underlying data structure. If you pass a map to a function that changes the contents of the map, the changes will be visible in the caller
+
+### MAP LITERALS
+
+Maps can be constructed using the usual composite literal syntax with colon-separated key-value pairs, so it's easy to build them during initialization.
+
+```go
+var timeZone = map[string]int{
+    "UTC":  0*60*60,
+    "EST": -5*60*60,
+    "CST": -6*60*60,
+    "MST": -7*60*60,
+    "PST": -8*60*60,
+}
+```
+
+### MISSING KEYS
+
+An attempt to fetch a map value with a key that is not present in the map will return the zero value for the type of the entries in the map. For instance, if the map contains `integers`, looking up a non-existent key will return `0`. A set can be implemented as a map with value type `bool`. Set the map entry to true to put the value in the set, and then test it by simple indexing.
+
+```go
+attended := map[string]bool{
+    "Ann": true,
+    "Joe": true,
+    ...
+}
+
+if attended[person] { // will be false if person is not in the map
+    fmt.Println(person, "was at the meeting")
+}
+```
+
+Sometimes you need to distinguish a missing entry from a zero value. Is there an entry for "UTC" or is that 0 because it's not in the map at all? You can discriminate with a form of multiple assignment.
+
+```go
+var seconds int
+var ok bool
+seconds, ok = timeZone[tz]
+```
+
+For obvious reasons, this is called the “comma ok” idiom. In this example, if tz is present, seconds will be set appropriately and ok will be true; if not, seconds will be set to zero and ok will be false. Here's a function that puts it together with a nice error report:
+
+```go
+func offset(tz string) int {
+    if seconds, ok := timeZone[tz]; ok {
+        return seconds
+    }
+    log.Println("unknown time zone:", tz)
+    return 0
+}
+```
+
+### DELETING MAP ENTRIES
+
+To delete a map entry, use the delete built-in function, whose arguments are the map and the key to be deleted. It's safe to do this even if the key is already absent from the map.
+
+```go
+delete(timeZone, "PDT")  // Now on Standard Time
+```
+
+### NESTED
+
+Maps can contain maps, creating a nested structure. For example:
+
+```go
+map[string]map[string]int
+map[rune]map[string]int
+map[int]map[string]map[string]int
+```
+
+## FIRST CLASS AND HIGHER ORDER FUNCTIONS
+
+A programming language is said to have "first-class functions" when functions in that language are treated like any other variable. Functions can be passed as an argument to other functions, can be returned by another function and can be assigned as a value to a variable
+
+A function that returns a function or accepts a function as input is called a Higher-Order function.
+
+```go
+func add(x, y int) int {
+  return x + y
+}
+
+func mul(x, y int) int {
+  return x * y
+}
+
+// aggregate applies the given math function to the first 3 inputs
+func aggregate(a, b, c int, arithmetic func(int, int) int) int {
+  return arithmetic(arithmetic(a, b), c)
+}
+
+func main() {
+  fmt.Println(aggregate(2,3,4, add))
+  // prints 9
+  fmt.Println(aggregate(2,3,4, mul))
+  // prints 24
+}
+```
+
+A function's type is dependent on the types of its parameters and return values.
+
+**WHY FIRST-CLASS AND HIGHER-ORDER FUNCTIONS?**
+
+At first, it may seem like dynamically creating functions and passing them around as variables adds unnecessary complexity. Most of the time you would be right. There are cases however when functions as values make a lot of sense. Some of these include:
+
+- (HTTP API handlers)[https://en.wikipedia.org/wiki/Web_API]
+- (Pub/Sub handlers)[https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern]
+- `Onclick` callbacks
+
+Any time you need to run custom code at a time in the future, functions as values might make sense.
+
+### CURRYING
+
+Function currying is a concept from functional programming and involves partial application of functions. It allows a function with multiple arguments to be transformed into a sequence of functions, each taking a single argument.
+
+Although Go does not support full currying, it is possible to simulate this behavior. Bu designing functions that take other functions as inputs and return new functions, we can achieve a similar effect.
+
+```go
+func main() {
+  squareFunc := selfMath(multiply)
+  doubleFunc := selfMath(add)
+
+  fmt.Println(squareFunc(5))
+  // prints 25
+
+  fmt.Println(doubleFunc(5))
+  // prints 10
+}
+
+func multiply(x, y int) int {
+  return x * y
+}
+
+func add(x, y int) int {
+  return x + y
+}
+
+func selfMath(mathFunc func(int, int) int) func (int) int {
+  return func(x int) int {
+    return mathFunc(x, x)
+  }
+}
+```
+
+### DEFER
+
+The `defer` keyword is a fairly unique feature of Go. It allows a function to be executed automatically _just before_ its enclosing function returns
+
+Deferred functions are typically used to close database connections, file handlers and the like.
+
+```go
+// CopyFile copies a file from srcName to dstName on the local filesystem.
+func CopyFile(dstName, srcName string) (written int64, err error) {
+
+  // Open the source file
+  src, err := os.Open(srcName)
+  if err != nil {
+    return
+  }
+  // Close the source file when the CopyFile function returns
+  defer src.Close()
+
+  // Create the destination file
+  dst, err := os.Create(dstName)
+  if err != nil {
+    return
+  }
+  // Close the destination file when the CopyFile function returns
+  defer dst.Close()
+
+  return io.Copy(dst, src)
+}
+```
+
+Defer is a great way to make sure that something happens at the end of a function, even if there are multiple return statements.
+
+### CLOSURES
+
+A closure is a function that references variables from outside its own function body. The function may access and assign to the referenced variables.
+
+When a variable is enclosed in a closure, the enclosing function has access to a mutable reference to the original value
+
+In this example, the `concatter()` function returns a function that has reference to an enclosed doc value. Each successive call to `harryPotterAggregator` mutates that same doc variable.
+
+```go
+func concatter() func(string) string {
+	doc := ""
+	return func(word string) string {
+		doc += word + " "
+		return doc
+	}
+}
+
+func main() {
+	harryPotterAggregator := concatter()
+	harryPotterAggregator("Mr.")
+	harryPotterAggregator("and")
+	harryPotterAggregator("Mrs.")
+	harryPotterAggregator("Dursley")
+	harryPotterAggregator("of")
+	harryPotterAggregator("number")
+	harryPotterAggregator("four,")
+	harryPotterAggregator("Privet")
+
+	fmt.Println(harryPotterAggregator("Drive"))
+	// Mr. and Mrs. Dursley of number four, Privet Drive
+}
+```
+
+### ANONYMOUS FUNCTIONS
+
+Anonymous functions are true to form in that they have no name. We've been using them throughout this chapter, but we haven't really talked about them yet.
+
+Anonymous functions are useful when defining a function that will only be used once or to create a quick closure.
+
+```go
+func doMath(f func(int) int, nums []int) []int {
+	var results []int
+	for _, n := range nums {
+		results = append(results, f(n))
+	}
+	return results
+}
+
+func main() {
+	nums := []int{1, 2, 3, 4, 5}
+
+	allNumsDoubled := doMath(func(x int) int {
+	    return x + x
+	}, nums)
+
+	fmt.Println(allNumsDoubled)
+}
+```
+
+### POINTERS
+
+As we have learned, a variable is a named location in memory that stores a value. We can manipulate the value of a variable by assigning a new value to it or by performing operations on it. When we assign a value to a variable, we are storing that value in a specific location in memory.
+
+```go
+x := 42
+// "x" is the name of a location in memory.
+// That location is storing the integer value of 42
+```
+
+**A POINTER IS A VARIABLE**
+A pointer is a variable that stores the memory address of another variable. This means that a pointer "points to" the location of where the data is stored NOT the actual data itself.
+
+The `*` syntax defines a pointer:
+
+```go
+var p *int
+```
+
+The `&` operator generates a pointer to its operand.
+The `*` dereferences a pointer to gain access to the value
+
+```go
+myString := "hello"
+myStringPtr := &myString
+
+fmt.Println(*myStringPtr) // read myString through the pointer
+*myStringPtr = "world"    // set myString through the pointer
+```
+
+Unlike C, Go has no pointer arithmetic
+
+**WHY ARE POINTERS USEFUL?**
+
+Pointers allow us to manipulate data in memory directly, without making copies or duplicating data. This can make programs more efficient and allow us to do things that would be difficult or impossible without them.
+
+**A POINTER'S ZERO VALUE IS NIL**
+
+### NIL POINTERS
+
+Pointers can be very dangerous.
+
+If a pointer points to nothing (the zero value of the pointer type) then dereferencing it will cause a runtime error (a panic) that crashes the program. Generally speaking, whenever you're dealing with pointers you should check if it's nil before trying to dereference it.
+
+### POINTER RECEIVERS
+
+A receiver type on a method can be a pointer.
+
+Methods with pointer receivers can modify the value to which the receiver points. Since methods often need to modify their receiver, pointer receivers are more common than value receivers. However, methods with pointer receivers don't require that a pointer is used to call the method. The pointer will automatically be derived from the value.
+
+```go
+type car struct {
+	color string
+}
+
+func (c *car) setColor(color string) {
+	c.color = color
+}
+
+func main() {
+	c := car{
+		color: "white",
+	}
+	c.setColor("blue")
+	fmt.Println(c.color)
+	// prints "blue"
+}
+```
+
+**NON-POINTER RECEIVER**
+
+```go
+type car struct {
+	color string
+}
+
+func (c car) setColor(color string) {
+	c.color = color
+}
+
+func main() {
+	c := car{
+		color: "white",
+	}
+	c.setColor("blue")
+	fmt.Println(c.color)
+	// prints "white"
+}
+```
+
+## PACKAGES
+
+[packages](./packages.md)
+
+## CONCURRENCY
+
+[concurrency](./concurrency.md)
+
+## MUTEXES
+
+[mutexes](./mutexes.md)
+
+## GENERICS
+
+[generics](./generics.md)
+
+## PROVERBS
+
+[proverbs](./proverbs.md)

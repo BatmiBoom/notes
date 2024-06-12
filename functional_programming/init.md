@@ -1,3 +1,48 @@
+- [What is functional programming?](#What is functional programming?)
+  - [Functional vs OOP](#Functional vs OOP)
+  - [Immutability](#Immutability)
+    - [Tuples vs Lists](#Tuples vs Lists)
+    - [Declarative Programming](#Declarative Programming)
+    - [Scripting is imperative](#Scripting is imperative)
+    - [Classes vs Functions](#Classes vs Functions)
+      - [Debugging FP](#Debugging FP)
+      - [Functions as Values](#Functions as Values)
+    - [Anonymous functions](#Anonymous functions)
+    - [First Class and Higher Order Functions](#First Class and Higher Order Functions)
+      - [First-Class Example](#First-Class Example)
+      - [Higher-Order Example](#Higher-Order Example)
+      - [Map](#Map)
+      - [Reduce](#Reduce)
+      - [Intersect](#Intersect)
+      - [Zip](#Zip)
+    - [Pure Functions](#Pure Functions)
+      - [Reference vs Value](#Reference vs Value)
+      - [Input and output](#Input and output)
+    - [NO-OP](#NO-OP)
+      - [Useless NO-OP](#Useless NO-OP)
+      - [Useful side-effect (but-impure)](#Useful side-effect (but-impure))
+      - [Memoization](#Memoization)
+      - [Referential Transparency](#Referential Transparency)
+    - [Rescursion](#Rescursion)
+      - [Base Case](#Base Case)
+      - [Solve a small problem](#Solve a small problem)
+      - [Recurse](#Recurse)
+      - [Recursion on a tree](#Recursion on a tree)
+    - [Functoin Transformation](#Functoin Transformation)
+      - [Why transform?](#Why transform?)
+        - [Code Reusability](#Code Reusability)
+    - [Clousures](#Clousures)
+      - [NONLOCAL](#NONLOCAL)
+    - [Currying](#Currying)
+    - [Decorators](#Decorators)
+      - [Args and Kwargs](#Args and Kwargs)
+        - [Positional Arguments](#Positional Arguments)
+        - [Keyword Arguments](#Keyword Arguments)
+    - [Sum Types](#Sum Types)
+      - [Integers, Strings, Floats, etc.](#Integers, Strings, Floats, etc.)
+      - [What is a sum type?](#What is a sum type?)
+    - [Enums in python](#Enums in python)
+
 # What is functional programming?
 
 FP is a paradigm where programs compose functions rather than mutate state (setting and updating variables)
@@ -7,7 +52,7 @@ FP is a paradigm where programs compose functions rather than mutate state (sett
 
 Examples:
 
-IMPERATIVE
+**IMPERATIVE**
 
 ```python
 num = get_a()
@@ -17,7 +62,7 @@ num = transform_b(num)
 return num
 ```
 
-FUNCTIONAL
+**FUNCTIONAL**
 
 ```python
 return transform_b(transform_a(get_a()))
@@ -110,7 +155,7 @@ print("Launched instance with id: {instance[0].id}")
 
 ### Classes vs Functions
 
-#### Should I use functions or classes?
+**Should I use functions or classes?**
 
 If you're unsure, default to functions. I typically find myself only reaching for classes when the data and behavior I'm trying to model fit naturally into a class-based approach. I've found this to more often be the case for things like games, simulations, and GUIs
 
@@ -118,6 +163,44 @@ If you're unsure, default to functions. I typically find myself only reaching fo
   Objects bundle behavior, data, and state together in a way tht draws boundaries between instances of thing (like chess pieces on a board)
 - Functions encourage you to think about the world as a series of transformatios on data.
   functions take data as input, transform it, and return it as output. E.x, a function might take the state of a chess board and move as input, and return the new state of the board as output
+
+#### Debugging FP
+
+It's nearly impossible, even for tenured senior developers, to write perfect code the first time. That's why debugging is such an important skill. The trouble is, sometimes you have these "elegant" (sarcasm intended) one-liners that are tricky to debug:
+
+```python
+def get_player_position(position, velocity, friction, gravity):
+    return calc_gravity(calc_friction(calc_move(position, velocity), friction), gravity)
+```
+
+If the output of get_player_position is incorrect, it's hard to know what's going on inside that black box. Break it up! Then you can inspect the moved, slowed, and final variables more easily:
+
+```python
+def get_player_position(position, velocity, friction, gravity):
+    moved = calc_move(position, velocity)
+    slowed = calc_friction(moved, friction)
+    final = calc_gravity(slowed, gravity)
+    print("Given:")
+    print(f"position: {position}, velocity: {velocity}, friction: {friction}, gravity: {gravity}")
+    print("Results:")
+    print(f"moved: {moved}, slowed: {slowed}, final: {final}")
+    return final
+```
+
+Once you've run it, found the issue, and solved it, you can remove the print statements.
+
+#### Functions as Values
+
+In Python, functions are just values, like strings, integers, or objects. For example, we can assign an existing function to a variable:
+
+```python
+
+def add(x, y):
+    return x + y
+
+addition = add
+print(addition(2, 5))
+```
 
 ### Anonymous functions
 
@@ -127,7 +210,7 @@ AF are true to form in that they have no name. In Python, we call these lambda f
 lambda x: x+1
 ```
 
-This is a function that takes in a single argument x and returns the result of x + 1. We can assign this function to a variable and call it like any other funtion.
+This is a function that takes in a single argument x and returns the result of x + 1. We can assign this function to a variable and call it like any other functions.
 
 ```python
 add_one = lambda x: x + 1
@@ -149,6 +232,18 @@ def categorize_file(filename):
     get_category = lambda extension: categories.get(extension, 'Unknown')
 
     return get_category(filename[filename.rfind(".") :])
+```
+
+```python
+name_extension_tuples = [("document" ,['.doc', '.docx']), ("image", ['.jpg', '.png'])]
+
+def filename_getter(name_extension_tuples):
+    mapping = {}
+    for t in name_extension_tuples:
+        for extension in t[1]:
+            mapping[extension] = t[0]
+
+    return lambda x: mapping.get(x, "Unknown")
 ```
 
 ### First Class and Higher Order Functions
@@ -300,7 +395,7 @@ Example:
 ```python
 import random
 
-def multiply_by2(nums): # Pure f
+def multiply_by2(nums):
     products = []
     for num in nums:
         products.append(num*2)
@@ -437,7 +532,6 @@ def sums(nums):
     if len(nums) == 0 # Base Case -> In this case, end of list
         return 0
 
-    # add the first number to the sum of the rest of the numbers
     return nums[0] + sum(nums[1:])
 ```
 
@@ -482,6 +576,28 @@ def zipmap(keys, values):
     return dict
 
 zipmap(["name", "age", "city"], ["Alice", 25, "Wonderland"])
+```
+
+Example :
+
+```python
+lst = [
+    1,
+    2
+    [3, [4, 5]]
+]
+
+def sum_nested_list(lst):
+    size = 0
+
+    for item in lst:
+        if type(item) == int:
+            size += item
+
+        if type(item) == list:
+            size += sum_nested_list(item)
+
+    return size
 ```
 
 #### Recursion on a tree
@@ -607,29 +723,25 @@ def formatter(pattern):
         return result
     return inner_func
 
-# It's easy to create new formatters now!
 bold_formatter = formatter("**{}**")
 italic_formatter = formatter("*{}*")
 bullet_point_formatter = formatter("* {}")
 
 print(bold_formatter("Hello"))
-# **Hello**
 print(italic_formatter("Hello"))
-# *Hello*
 print(bullet_point_formatter("Hello"))
-# * Hello
 ```
 
 ### Clousures
 
 Is a function that references variables from outside its own function body. What this means is that under the hood the function definition and its environment are bundled together into a single entity.
 
+Retains the state of its environment
+
 ```python
 def concatter():
 	doc = ""
 	def inner_func(word):
-		# "nonlocal" tells Python to use the doc
-		# variable from the enclosing scope
 		nonlocal doc
 		doc += word + " "
 		return doc
@@ -646,10 +758,28 @@ harry_potter_aggregator("four,")
 harry_potter_aggregator("Privet")
 
 print(harry_potter_aggregator("Drive"))
-# Mr. and Mrs. Dursley of number four, Privet Drive
 ```
 
 Each successive call to `harry_potter_aggregator` mutates that same `doc` variable. When `concattter()` is calledd, you can think of it as creatin a new stateful function that remembers the value of doc as its used
+
+```python
+new_collection = new_collection(["doc1", "doc2", "doc3"])
+print(new_collection("doc4"))
+# ['doc1', 'doc2', 'doc3', 'doc4']
+print(new_collection("doc5"))
+# ['doc1', 'doc2', 'doc3', 'doc4', 'doc5']
+
+def new_collection(initial_docs):
+    docs = initial_docs.copy()
+
+    def close_over(doc):
+        nonlocal docs
+        docs.append(doc)
+
+        return docs
+
+    return close_over
+```
 
 #### NONLOCAL
 
@@ -697,6 +827,24 @@ def converted_font_size(font_size):
     return inner_func
 ```
 
+Example:
+
+```python
+num_lines = lines_with_sequence(char)(length)(doc)
+
+def lines_with_sequence(char):
+    def with_char(length):
+        sequence = char * length
+        def with_lenght(doc):
+            count = 0
+            for line in doc.split("\n"):
+                if sequence in line:
+                    count += 1
+            return count
+        return with_lenght
+    return with_char
+```
+
 ### Decorators
 
 Decorators are Python-specifc way to modify or ennhance existing functions. They're just Pythonic syntatic sugar for higher-order functions (and sometimes closures)
@@ -719,9 +867,6 @@ def process_doc(doc):
     print(f"Document: {doc}")
 
 procces_doc("Hello")
-# Prints:
-# Vowel Count: 2
-# Document: Hello
 ```
 
 Decorator are just syntathic sugar for higher-order functions, which means its just a fancy way of doing the exact same thing.
@@ -738,7 +883,6 @@ process_with_count("Hello")
 
 ```python
 def file_type_aggregator(func_to_wrap):
-    # dict of file_type -> count
     counts = {}
 
     def wrapper(doc, file_type):
@@ -760,7 +904,6 @@ def process_doc(doc, file_type):
     return f"Processing doc: {doc} with File Type: {file_type}"
 
 process_doc("Welcome to the jungle", "txt")
-# ('Processing doc: Welcome to the jungle with File Type: txt', {'txt': 1})
 ```
 
 #### Args and Kwargs
@@ -776,8 +919,6 @@ def print_arguments(*args, *kwargs):
     print(f"Keyword arguments: {kwargs}")
 
 print_arguments("hello", "world", a=1, a=2)
-# Positional arguments: ('hello', 'world')
-# Keyword arguments: {'a': 1, 'b': 2}
 ```
 
 ##### Positional Arguments
@@ -842,9 +983,7 @@ def add_with_log(a, b):
     return a + b
 
 add_with_log(2, 3)
-# Prints: Called 1 times
 add_with_log(4, 5)
-# Prints: Called 2 times
 ```
 
 ```python
