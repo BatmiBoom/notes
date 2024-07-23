@@ -175,6 +175,18 @@ func helloWorld(s1 string, s2 string) string {
 - float32 float64
 - complex64 complex128
 
+## Comments
+
+```go
+// This is a single line comment
+
+/*
+    This is a multi-line comment
+    niether of these comments will execute
+    as code
+*/
+```
+
 ## Declaring a Variable
 
 Variables are declared using the `var` keyword.
@@ -427,6 +439,54 @@ When multiple arguments are of the same type, and are next to each other in the 
 func addToDatabase(hp, damage int) {}
 func addToDatabase(hp, damage int, name string) {}
 func addToDatabase(hp, damage int, name string, level int) {}
+```
+
+### Functions as values
+
+Go supports first-class and higher-order functions, which are just fancy ways of saying "functions as values". Functions are just another type.
+
+```go
+func add(x, y int) int {
+	return x + y
+}
+
+func mul(x, y int) int {
+	return x * y
+}
+
+func aggregate(a, b, c int, arithmetic func(int, int) int) int {
+  firstSum := arithmetic(a, b)
+  secondSum := arithmetic(firstSum, c)
+  return secondSum
+}
+
+func main() {
+	sum := aggregate(2, 3, 4, add)
+	product = aggregate(2, 3, 4, mul)
+}
+```
+
+### Anonymous functions
+
+Anonymous functions are true to form in that they have no name.
+
+```go
+func conversions(converter func(int) int, x, y, z int) (int, int, int) {
+	convertedX := converter(x)
+	convertedY := converter(y)
+	convertedZ := converter(z)
+	return convertedX, convertedY, convertedZ
+}
+
+func main() {
+	newX, newY, newZ := conversions(func(a int) int {
+	    return a + a
+	}, nums)
+
+	newX, newY, newZ = conversions(func(a int) int {
+	    return a * a
+	}, nums)
+}
 ```
 
 ### Passing variables by value
@@ -1823,23 +1883,18 @@ The `defer` keyword is a fairly unique feature of Go. It allows a function to be
 Deferred functions are typically used to close database connections, file handlers and the like.
 
 ```go
-// CopyFile copies a file from srcName to dstName on the local filesystem.
 func CopyFile(dstName, srcName string) (written int64, err error) {
 
-  // Open the source file
   src, err := os.Open(srcName)
   if err != nil {
     return
   }
-  // Close the source file when the CopyFile function returns
   defer src.Close()
 
-  // Create the destination file
   dst, err := os.Create(dstName)
   if err != nil {
     return
   }
-  // Close the destination file when the CopyFile function returns
   defer dst.Close()
 
   return io.Copy(dst, src)
