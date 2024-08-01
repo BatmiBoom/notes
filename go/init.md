@@ -1,88 +1,91 @@
-- [GO](#GO)
-  - [Comparing Go's Speed](#Comparing Go's Speed)
-  - [The compilation process](#The compilation process)
-  - [Structure of a go program](#Structure of a go program)
-  - [Go is strongly typed](#Go is strongly typed)
-  - [Go programs are easy on memory](#Go programs are easy on memory)
-    - [COMPARISON](#COMPARISON)
-  - [Basic Types](#Basic Types)
-    - [Bool](#Bool)
-    - [String](#String)
-      - [Concatenate Strings](#Concatenate Strings)
-    - [Integer](#Integer)
-  - [Declaring a Variable](#Declaring a Variable)
-    - [Short Variable Declaration](#Short Variable Declaration)
-  - [Type Inference](#Type Inference)
-  - [Same Line Declarations](#Same Line Declarations)
-  - [Type Sizes](#Type Sizes)
-  - [Prefer "default" types](#Prefer "default" types)
-  - [WHEN SHOULD I USE A MORE SPECIFIC TYPE?](#WHEN SHOULD I USE A MORE SPECIFIC TYPE?)
-  - [Constants](#Constants)
-    - [Computed Constants](#Computed Constants)
-  - [Formatting Strings in Go](#Formatting Strings in Go)
-    - [Default Representation](#Default Representation)
-    - [String](#String)
-    - [Integer](#Integer)
-    - [Float](#Float)
-  - [Conditionals](#Conditionals)
-    - [The initial statement of an if block](#The initial statement of an if block)
-  - [Functions](#Functions)
-    - [Multiple Parameters](#Multiple Parameters)
-    - [Passing variables by value](#Passing variables by value)
-    - [Ignoring return values](#Ignoring return values)
-    - [Named return values](#Named return values)
-      - [The benefits of named returns](#The benefits of named returns)
-    - [Explicit Returns](#Explicit Returns)
-    - [Early Returns](#Early Returns)
-  - [Structs](#Structs)
-    - [Nested Structs](#Nested Structs)
-    - [Anonymous structs](#Anonymous structs)
-    - [Embedded structs](#Embedded structs)
-    - [Struct methods](#Struct methods)
-  - [Interfaces](#Interfaces)
-    - [Interface Implementation](#Interface Implementation)
-    - [Multiple Interfaces](#Multiple Interfaces)
-    - [Name your interface arguments](#Name your interface arguments)
-  - [Type assertions](#Type assertions)
-  - [Type Switches](#Type Switches)
-  - [Clean Interfaces](#Clean Interfaces)
-    - [The Empty Interface](#The Empty Interface)
-      - [Zero Value of an interface](#Zero Value of an interface)
-      - [Interfaces on pointers](#Interfaces on pointers)
-  - [The Error Interface](#The Error Interface)
-    - [The errors package](#The errors package)
-  - [Loops](#Loops)
-    - [Omitting conditions from a FOR LOOP](#Omitting conditions from a FOR LOOP)
-  - [Continue & Break](#Continue & Break)
-  - [Arrays](#Arrays)
-  - [Slices](#Slices)
-    - [Make](#Make)
-    - [VARIADIC](#VARIADIC)
-    - [SPREAD OPERATOR](#SPREAD OPERATOR)
-    - [APPEND](#APPEND)
-    - [SLICE OF SLICES](#SLICE OF SLICES)
-    - [Tricky Slices](#Tricky Slices)
-    - [RANGE](#RANGE)
-  - [MAPS](#MAPS)
-    - [MUTATIONS](#MUTATIONS)
-    - [KEY TYPES](#KEY TYPES)
-    - [MAP LITERALS](#MAP LITERALS)
-    - [MISSING KEYS](#MISSING KEYS)
-    - [DELETING MAP ENTRIES](#DELETING MAP ENTRIES)
-    - [NESTED](#NESTED)
-  - [FIRST CLASS AND HIGHER ORDER FUNCTIONS](#FIRST CLASS AND HIGHER ORDER FUNCTIONS)
-    - [CURRYING](#CURRYING)
-    - [DEFER](#DEFER)
-    - [CLOSURES](#CLOSURES)
-    - [ANONYMOUS FUNCTIONS](#ANONYMOUS FUNCTIONS)
-    - [POINTERS](#POINTERS)
-    - [NIL POINTERS](#NIL POINTERS)
-    - [POINTER RECEIVERS](#POINTER RECEIVERS)
-  - [PACKAGES](#PACKAGES)
-  - [CONCURRENCY](#CONCURRENCY)
-  - [MUTEXES](#MUTEXES)
-  - [GENERICS](#GENERICS)
-  - [PROVERBS](#PROVERBS)
+- [GO](#go)
+  - [Comparing Go's Speed](#comparing-go's-speed)
+  - [The compilation process](#the-compilation-process)
+  - [Structure of a go program](#structure-of-a-go-program)
+  - [Go is strongly typed](#go-is-strongly-typed)
+  - [Go programs are easy on memory](#go-programs-are-easy-on-memory)
+    - [COMPARISON](#comparison)
+  - [Basic Types](#basic-types)
+    - [Bool](#bool)
+    - [String](#string)
+      - [Concatenate Strings](#concatenate-strings)
+    - [Integer](#integer)
+  - [Comments](#comments)
+  - [Declaring a Variable](#declaring-a-variable)
+    - [Short Variable Declaration](#short-variable-declaration)
+  - [Type Inference](#type-inference)
+  - [Same Line Declarations](#same-line-declarations)
+  - [Type Sizes](#type-sizes)
+  - [Prefer "default" types](#prefer-"default"-types)
+  - [WHEN SHOULD I USE A MORE SPECIFIC TYPE?](#when-should-i-use-a-more-specific-type?)
+  - [Constants](#constants)
+    - [Computed Constants](#computed-constants)
+  - [Formatting Strings in Go](#formatting-strings-in-go)
+    - [Default Representation](#default-representation)
+    - [String](#string)
+    - [Integer](#integer)
+    - [Float](#float)
+  - [Conditionals](#conditionals)
+    - [The initial statement of an if block](#the-initial-statement-of-an-if-block)
+  - [Functions](#functions)
+    - [Multiple Parameters](#multiple-parameters)
+    - [Functions as values](#functions-as-values)
+    - [Anonymous functions](#anonymous-functions)
+    - [Passing variables by value](#passing-variables-by-value)
+    - [Ignoring return values](#ignoring-return-values)
+    - [Named return values](#named-return-values)
+      - [The benefits of named returns](#the-benefits-of-named-returns)
+    - [Explicit Returns](#explicit-returns)
+    - [Early Returns](#early-returns)
+  - [Structs](#structs)
+    - [Nested Structs](#nested-structs)
+    - [Anonymous structs](#anonymous-structs)
+    - [Embedded structs](#embedded-structs)
+    - [Struct methods](#struct-methods)
+  - [Interfaces](#interfaces)
+    - [Interface Implementation](#interface-implementation)
+    - [Multiple Interfaces](#multiple-interfaces)
+    - [Name your interface arguments](#name-your-interface-arguments)
+  - [Type assertions](#type-assertions)
+  - [Type Switches](#type-switches)
+  - [Clean Interfaces](#clean-interfaces)
+    - [The Empty Interface](#the-empty-interface)
+      - [Zero Value of an interface](#zero-value-of-an-interface)
+      - [Interfaces on pointers](#interfaces-on-pointers)
+  - [The Error Interface](#the-error-interface)
+    - [The errors package](#the-errors-package)
+  - [Loops](#loops)
+    - [Omitting conditions from a FOR LOOP](#omitting-conditions-from-a-for-loop)
+  - [Continue & Break](#continue-&-break)
+  - [Arrays](#arrays)
+  - [Slices](#slices)
+    - [Make](#make)
+    - [VARIADIC](#variadic)
+    - [SPREAD OPERATOR](#spread-operator)
+    - [APPEND](#append)
+    - [SLICE OF SLICES](#slice-of-slices)
+    - [Tricky Slices](#tricky-slices)
+    - [RANGE](#range)
+  - [MAPS](#maps)
+    - [MUTATIONS](#mutations)
+    - [KEY TYPES](#key-types)
+    - [MAP LITERALS](#map-literals)
+    - [MISSING KEYS](#missing-keys)
+    - [DELETING MAP ENTRIES](#deleting-map-entries)
+    - [NESTED](#nested)
+  - [FIRST CLASS AND HIGHER ORDER FUNCTIONS](#first-class-and-higher-order-functions)
+    - [CURRYING](#currying)
+    - [DEFER](#defer)
+    - [CLOSURES](#closures)
+    - [ANONYMOUS FUNCTIONS](#anonymous-functions)
+    - [POINTERS](#pointers)
+    - [NIL POINTERS](#nil-pointers)
+    - [POINTER RECEIVERS](#pointer-receivers)
+  - [PACKAGES](#packages)
+  - [CONCURRENCY](#concurrency)
+  - [MUTEXES](#mutexes)
+  - [GENERICS](#generics)
+  - [PROVERBS](#proverbs)
 
 # GO
 
@@ -379,6 +382,20 @@ s := fmt.Sprintf("I am %.2f years old", 10.523)
 // I am 10.52 years old
 ```
 
+## Runes and String Encoding
+
+Generally a "character" is a single byte.
+Using `ASCII` encoding, the standard for the C programming language, we can represent 128 characters with 7 bits. This is enough for the English alphabet, numbers, and some special characters.
+
+In Go, strings are just sequences of bytes: they can hold arbitrary data. However, Go also has a special type, `rune`, which is an alias for `int32`. This means that a `rune` is a 32-bit integer, which is large enough to hold any `Unicode` code point.
+
+When you're working with strings, you need to be aware of the encoding (bytes -> representation). Go uses UTF-8 encoding, which is a variable-length encoding.
+
+There are 2 main takeaways:
+
+- When you need to work with individual characters in a string, you should use the `rune` type. It breaks strings up into their individual characters, which can be more than one byte long.
+- We can use `zany` characters like emojis and Chinese characters in our strings, and Go will handle them just fine
+
 ## Conditionals
 
 `if` statements in Go do not use parentheses around the condition:
@@ -418,6 +435,57 @@ if length := getLength(email); length < 1 {
     fmt.Println("Email is invalid")
 }
 ```
+
+### Switch
+
+Switch statements are a way to compare a value against multiple options. They are similar to if-else statements but are more concise and readable when the number of options is more than 2.
+
+```go
+func getCreator(os string) string {
+    var creator string
+    switch os {
+    case "linux":
+        creator = "Linus Torvalds"
+    case "windows":
+        creator = "Bill Gates"
+    case "mac":
+        creator = "A Steve"
+    default:
+        creator = "Unknown"
+    }
+    return creator
+}
+```
+
+Notice that in Go, the `break` statement is not required at the end of a `case` to stop it from falling through to the next case. The `break` statement is implicit in Go.
+
+If you do want a `case` to fall through to the next case, you can use the `fallthrough` keyword.
+
+```go
+func getCreator(os string) string {
+    var creator string
+    switch os {
+    case "linux":
+        creator = "Linus Torvalds"
+    case "windows":
+        creator = "Bill Gates"
+
+    // all three of these cases will set creator to "A Steve"
+    case "Mac OS":
+        fallthrough
+    case "Mac OS X":
+        fallthrough
+    case "mac":
+        creator = "A Steve"
+
+    default:
+        creator = "Unknown"
+    }
+    return creator
+}
+```
+
+The `default` case does what you'd expect: it's the case that runs if none of the other cases match.
 
 ## Functions
 
@@ -803,6 +871,250 @@ fmt.Println(r.area())
 ```
 
 A receiver is just a special kind of function parameter. Receivers are important because they will, as you'll learn in the exercises to come, allow us to define interfaces that our structs (and other types) can implement.
+
+### Memory Layout
+
+Structs sit in memory in a contiguous block, with fields placed one after another as defined in the `struct`. For example this `struct`:
+
+```go
+type stats struct{
+    Reach uint16
+    NumPosts uint8
+    NumLikes uint8
+}
+```
+
+Looks like this in memory:
+
+```
+stats struct (4 bytes total
+|----------------------------|-----------|-----------|
+|                            |           |           |
+|       Reach                | NumPosts  | NumLikes  |
+|       uint16               | uint8     | uint8     |
+|       (2 bytes)            | (1 byte)  | (1 bytes) |
+|                            |           |           |
+|____________________________|___________|___________|
+```
+
+#### ORDER OF FIELDS MATTERS
+
+The order of `fields` in a `struct` can have a big impact on memory usage. This is the same `struct` as above, but poorly designed:
+
+```go
+type stats struct {
+	NumPosts uint8
+	Reach    uint16
+	NumLikes uint8
+}
+```
+
+Looks like this in memory:
+
+```
+stats struct (6 bytes total
+|----------|---------|---------------------|-----------|-----------|
+|          |         |                     |           |           |
+| NumPosts | Wasted  |     Reach           | NumLikes  | Wasted    |
+| uint8    | Space   |     uint16          | uint8     | Space     |
+| (1 byte) | (1 byte)|     (2 bytes)       | (1 byte)  | (1 bytes) |
+|          |         |                     |           |           |
+|__________|_________|_____________________|___________|___________|
+```
+
+Notice that Go has "aligned" the fields, meaning that it has added some padding (wasted space) to make up for the size difference between the `uint16` and `uint8` types. It's done for execution speed, but it can lead to increased memory usage.
+
+If you have a specific reason to be concerned about memory usage, aligning the fields by size (largest to smallest) can help. You can also use the reflect package to debug the memory layout of a `struct`:
+
+```go
+typ := reflect.TypeOf(stats{})
+fmt.Printf("Struct is %d bytes\n", typ.Size())
+```
+
+### Empty Struct
+
+Are used in Go as a unary value.
+
+```go
+// anonymous empty struct type
+empty := struct{}{}
+
+// named empty struct type
+type emptyStruct struct{}
+empty := emptyStruct{}
+```
+
+The cool thing about empty structs is that they're the smallest possible type in Go: they take up zero **bytes of memory**.
+
+Memory Usage:
+
+- `struct{}{}` - 0 bytes
+- `bool` - 1 bytes
+- `uint16` - 2 bytes
+- `int64` - 8 bytes
+
+## Enums
+
+Go's lack of enums, sum types, tagged unions, etc. Compared to other statically typed languages like:
+
+- Rust
+- TypeScript
+- OCaml
+
+Go's type system just isn't as powerful. It's more similar to C's type system than it is to Rust's. It's more concerned with simplicity than it is with expressiveness.
+
+### Error Handling
+
+In Rust, like Go, errors are just values. In Go, we write something like this:
+
+```go
+user, err := getUser()
+if err != nil {
+    return fmt.Errorf("failed to get user: %w", err)
+}
+// do something with user
+```
+
+In Rust, we can do something like this:
+
+```rust
+let user_result = get_user();
+let user = match user_result {
+    Ok(user) => user,
+    Err(error) => return Err(format!("failed to get user: {}", error)),
+};
+```
+
+In Rust, the `get_user` function in Rust returns a `Result` type: a type that is either an `Ok` or an `Err`. The compiler forces the developer to handle the error case before they can continue with the happy path (using the user data).
+
+In Go, the developer can choose to happily ignore the `error` value if they choose and use the user data, even if it's invalid (probably nil or an empty struct).
+
+The support for enums in Rust makes it easier to write bug-free code.
+
+```user.go
+package main
+
+import "fmt"
+
+type email struct {
+	status    string
+	recipient *user
+}
+
+type user struct {
+	email  string
+	status string
+}
+
+type analytics struct {
+	totalBounces int
+}
+
+func (u *user) updateStatus(status string) error {
+	if status != "email_bounced" {
+		return fmt.Errorf("invalid status: %s", status)
+	}
+	u.status = status
+	return nil
+}
+
+func (a *analytics) track(event string) error {
+	if event != "email_bounced" {
+		return fmt.Errorf("invalid event: %s", event)
+	}
+	a.totalBounces++
+	return nil
+}
+```
+
+```main.go
+package main
+
+import (
+	"fmt"
+)
+
+func (a *analytics) handleEmailBounce(em email) error {
+	err := em.recipient.updateStatus(em.status)
+	if err != nil {
+		return fmt.Errorf("error updating user status: %w", err)
+	}
+	err = a.track(em.status)
+	if err != nil {
+		return fmt.Errorf("error updating user status: %w", err)
+	}
+
+	return nil
+}
+```
+
+## Type Aliases
+
+For all its faults, TypeScript does have a pretty incredible type system. Here's one of the things it can do that i often miss in Go:
+
+```typescript
+type sendingChannel = "email" | "sms" | "phone";
+
+function sendNotification(ch: sendingChannel, message: string) {}
+```
+
+This `sendingChannel` type that we've created is a `union type`. It can only be one of the three strings that we've defined. That means when a developer calls `sendNotification()` they can't accidentally pass an invalid `sendingChannel` like `"slack"` or even a misspelled `"emil"`. The TypeScript compiler will catch that mistake at compile time.
+
+In Go, we don't have these nice things. We embrace the Grug mentality. The closest thing we have to a union type is a type alias:
+
+```go
+type sendingChannel string
+
+const (
+    Email sendingChannel = "email"
+    SMS sendingChannel = "sms"
+    Phone sendingChannel = "phone"
+)
+
+func sendNotification(ch sendingChannel, message string) {}
+```
+
+It's a bit safer than using a plain old `string` in Go, but it's not completely safe. Go will stop us from doing this:
+
+```go
+sendingCh := "slack"
+sendNotification(sendingCh, "hello") // string is not sendingChannel
+```
+
+But it will _not_ stop us from doing this:
+
+```go
+// "slack" is automatically implied as a sendingChannel
+sendNotification("slack", "hello")
+```
+
+And will also not stop us from doing this:
+
+```go
+sendingCh := "slack"
+convertedSendingCh := sendingChannel(sendingCh)
+sendNotification(convertedSendingCh, "hello")
+```
+
+The `sendingChannel` type is just an alias for `string`, and because we made some constants of that type, most developers will just use those constants: we've made it easy to do the right thing. That said, Go still doesn't force us to do the right thing like TypeScript does.
+
+### IOTA
+
+Go has a language feature, that when used with a type alias, kinda looks like an enum.Its called `iota`
+
+```go
+type sendingChannl int
+
+const (
+    Email sendingChannel = iota
+    SMS
+    Phone
+)
+```
+
+The `iota` keyword is a special keyword in Go that creates a sequence of numbers. It starts at `0` and increments by `1` for each constant in the `const` block. So in the example above, `Email` is 0, `SMS` is 1, and `Phone` is 2.
+
+Go developers sometimes use iota to create a sequence of constants to represent a set of related values, much like you would with an `enum` in other languages. But remember, it's not an `enum`. It's just a sequence of numbers.
 
 ## Interfaces
 
@@ -1903,6 +2215,54 @@ func CopyFile(dstName, srcName string) (written int64, err error) {
 
 Defer is a great way to make sure that something happens at the end of a function, even if there are multiple return statements.
 
+### BLOCK SCOPE
+
+Unlike Python, Go is not function-scoped, it's block-scoped. Variables declared inside a block are only accessible within that block (and its nested blocks). There's also the package scope. We'll talk about packages later, but for now, you can think of it as the outermost, nearly global scope.
+
+```go
+package main
+
+// scoped to the entire "main" package (basically global)
+var age = 19
+
+func sendEmail() {
+    // scoped to the "sendEmail" function
+    name := "Jon Snow"
+
+    for i := 0; i < 5; i++ {
+        // scoped to the "for" body
+        email := "snow@winterfell.net"
+    }
+}
+```
+
+Blocks are defined by curly braces `{}`. New blocks are created for:
+
+- Functions
+- Loops
+- If statements
+- Switch statements
+- Select statements
+- Explicit blocks
+
+It's a bit unusual, but occasionally you'll see a plain old explicit block. It exists for no other reason than to create a new scope.
+
+```go
+package main
+
+func main() {
+    {
+        age := 19
+        // this is okay
+        fmt.Println(age)
+    }
+
+    // this is not okay
+    // the age variable is out of scope
+    fmt.Println(age)
+}
+```
+
 ### CLOSURES
 
 A closure is a function that references variables from outside its own function body. The function may access and assign to the referenced variables.
@@ -2051,6 +2411,108 @@ func main() {
 	// prints "white"
 }
 ```
+
+### REFERENCES
+
+It's possible to define an empty pointer. For example, an empty pointer to an integer:
+`var p *int`
+
+Its zero value is `nil`, which means it doesn't point to any memory address.
+
+It's common to immediately create a new pointer by instead using the `&` operator to get a pointer to its operand:
+
+```go
+myString := "hello" // myString is just a string
+myStringPtr := &myString // myStringPtr is a pointer to myString's address
+```
+
+**DEREFERENCE**
+
+The `*` operator deferences a pointer to get the original value
+
+```go
+fmt.Println(*myStringPtr) // read myString through the pointer
+*myStringPtr = "world" // set myString through the pointer
+```
+
+Unlike C, Go has no pointer arithmetic.
+
+### Pass by Reference
+
+Functions in Go generally pass variables by `value`, meaning that functions receive a `copy` of most **non-composite** types:
+
+```go
+func increment(x int) {
+    x++
+    fmt.Println(x)
+    // 6
+}
+
+
+func main() {
+    x := 5
+    increment(x)
+    fmt.Println(x)
+    // 5
+}
+```
+
+The main function still prints 5 because the increment function received a **copy** of `x`.
+
+One of the most common use cases for `pointers` in Go is to pass `variables` by `reference`, meaning that the function receives the `address` of the original `variable`, not a `copy` of the value. This allows the function to `update` the original `variable value`.
+
+```go
+func increment(x *int) {
+    *x++
+    fmt.Println(*x)
+    // 6
+}
+
+func main() {
+    x := 5
+    increment(&x)
+    fmt.Println(x)
+    // 6
+}
+```
+
+```go
+package main
+
+import (
+	"strings"
+)
+
+func removeProfanity(message *string) {
+	*message = strings.ReplaceAll(*message, "fubb", "****")
+	*message = strings.ReplaceAll(*message, "shiz", "****")
+	*message = strings.ReplaceAll(*message, "witch", "*****")
+}
+```
+
+### Pointer Performance
+
+> Pointers are always faster because copying is slow.
+
+But that doesn't mean we have to use it everywhere
+
+Here are my rules of thumb:
+
+- First, worry about writing clear, correct, maintainable code.
+- If you have a performance problem, fix it.
+
+Before even thinking about using pointers to optimize your code, use pointers when you need a shared reference to a value; otherwise, just use values.
+
+If you do have a performance problem, consider:
+
+- Stack vs. Heap
+- Copying
+
+Interestingly, local non-pointer variables are generally faster to pass around than pointers because they're stored on the stack, which is faster to access than the heap. Even though copying is involved, the stack is so fast that it's no big deal.
+
+Once the value becomes large enough that copying is the greater problem, it can be worth using a pointer to avoid copying. That value will probably go to the heap, so the gain from avoiding copying needs to be greater than the loss from moving to the heap.
+
+One of the reasons Go programs tend to use less memory than Java and C# programs is that Go tends to allocate more on the stack.
 
 ## PACKAGES
 
