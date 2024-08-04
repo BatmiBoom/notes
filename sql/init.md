@@ -607,4 +607,331 @@ SELECT * FROM products
 The query above matches products like:
 
 - shoot
-- groo
+- groot
+
+## LIMIT
+
+The `LIMIT` keyword can be used at the end of a select statement to reduce the number of records returned.
+
+```sql
+SELECT * FROM products
+    WHERE product_name LIKE '%berry%'
+    LIMIT 50;
+```
+
+The query above retrieves all the records from the `products` table where the name contains the word `berry`. The `LIMIT` statement only allows the database to return _up_ to 50 records matching the query. This means that if there aren't that many records matching the query, the `LIMIT` statement will **not have an effect**.
+
+## ORDER BY
+
+The `ORDER BY` keyword by default sorts records by the given field in ascending order, or `ASC` for short. However, `ORDER BY` does support descending order as well with the keyword `DESC`.
+
+### Examples
+
+This query returns the `name`, `price`, and `quantity` fields from the `products` table sorted by `price` in _ascending_ order:
+
+```sql
+SELECT name, price, quantity FROM products
+    ORDER BY price;
+```
+
+This query returns the `name`, `price`, and `quantity` of the products ordered by the quantity in _descending_ order:
+
+```sql
+SELECT name, price, quantity FROM products
+    ORDER BY quantity DESC;
+```
+
+## ORDER BY AND LIMIT
+
+When using both `ORDER BY` and `LIMIT`, the `ORDER BY` clause must come _first_.
+
+## AGGREGATIONS
+
+An "aggregation" is a _single_ value that's derived by combining _several_ other values. We performed an aggregation earlier when we used the `count` statement to count the number of records in a table
+
+Data stored in a database should generally be stored `raw`. When we need to calculate some additional data from the raw data, we can use an _aggregation_.
+
+Take the following `count` aggregation as an example:
+
+```sql
+SELECT COUNT(*)
+    FROM products
+    WHERE quantity = 0;
+```
+
+This query returns the number of products that have a `quantity` of `0`. We _could_ store a count of the products in a separate database table, and increment/decrement it whenever we make changes to the `products` table - but that would be _redundant_.
+
+It's _much simpler_ to store the products in a single place ( we call this a single source of truth ) and run an aggregation when we need to derive additional information from the raw data.
+
+## SUM
+
+The `sum` aggregation functions returns the sum of a set of values.
+
+For example, the query below returns a single record containing a single field. The returned value is equal to the _total_ salary being collected by all of the `employees` in the `employees` table.
+
+```sql
+SELECT sum(salary)
+    FROM employees;
+```
+
+## MAX
+
+The `max` function retrieves the _largest_ values from a set of values
+
+```sql
+SELECT max(price)
+    FROM products;
+```
+
+## MIN
+
+The `min` function retrieves the _lowest_ values from a set of values
+
+```sql
+SELECT product_name, min(price)
+    FROM products;
+```
+
+## GROUP BY
+
+`GROUP BY` clause which can group rows that have similar values into "summary" rows. It returns one row for each group. The interesting part is that each group can have an aggregate function applied to it that operates only on the grouped data.
+
+EXAMPLE:
+
+```sql
+SELECT album_id, count(song_id)
+    FROM songs
+    GROUP BY album_id;
+```
+
+This query retrieves a count of all the songs on each album. One record is returned per album, and they each have their own `count`.
+
+## AVERAGE
+
+`avg` calculated the average of all non-NULL values.
+
+```sql
+SELECT avg(song_length)
+    FROM songs;
+```
+
+This query returns the average `song_length` in the `songs` table
+
+## HAVING
+
+When we need to filter the results of a `GROUP BY` query even further, we can use the `HAVING` clause. The `HAVING` clause specifies a search condition for a group.
+
+The `HAVING` clause is similar to the `WHERE` clause, but it operates on groups after they've been grouped, rather than rows _before_ they've been grouped.
+
+```sql
+SELECT album_id, count(id) as count
+    FROM songs
+    GROUP BY album_id
+    HAVING count > 5;
+```
+
+This query returns the `album_id` and count of its songs, but only for albums with more than `5` songs.
+
+### HAVING VS WHERE
+
+The difference between this two statements:
+
+- A `WHERE` condition is applied to _all_ the data in a query _before_ it's grouped by a `GROUP BY` clause.
+
+- A `HAVING` condition is only applied to the _grouped rows_ that are returned _after_ a `GROUP BY` is applied
+
+> If you want to filter based on the result of an aggregation, you need to use `HAVING`.
+> If you want to filter on a value that's present in the raw data, you should use a simple `WHERE`.
+
+## ROUND
+
+Sometimes we need to round some numbers, particularly when working with the results of an aggregation. We can use the `ROUND()` function to get the job done.
+
+The SQL `round()` function allows you to specify both the value you wish to round and the precision to which you wish to round it:
+
+`round(value, precision)`
+
+If no precision is given, SQL will round the value to the nearest whole value:
+
+```sql
+select song_name, round(avg(song_length), 1)
+from songs
+```
+
+This query returns the average song_length from the songs table, rounded to a single decimal point.
+
+## SUB QUERIES
+
+It is possible to run a query on the result set of another query - a query within a query!
+
+Subqueries can be very useful in a number of situations when trying to retrieve specific data that wouldn't be accessible by simply querying a single table.
+
+**RETRIEVING DATA FROM MULTIPLE TABLES**
+
+```sql
+SELECT id, song_name, artist_id
+FROM songs
+WHERE artist_id IN (
+    SELECT id
+    FROM artists
+    WHERE artist_name LIKE 'Rick%'
+);
+```
+
+In this hypothetical database, the query above selects all of the `ids`, `song_names`, and `artist_ids` from the `songs` table that are written by artists whose name starts with "Rick". Notice that the subquery allows us to use information from a different table - in this case the `artists` table.
+
+### SUBQUERY SYNTAX
+
+The only syntax unique to a subquery is the parentheses surrounding the nested query. The `IN` operator could be different, for example, we could use the `=` operator if we expect a single value to be returned.
+
+## NO TABLES
+
+**SQL is a full programming language**
+
+We usually use it to interact with data stored in tables, but it's quite flexible and powerful.
+
+For example, you can `SELECT` information that's simply calculated, with no tables necessary.
+
+`SELECT 5 + 10 as sum;`
+
+## RELATIONSHIPS
+
+### Table Relationships
+
+Relational databases are powerful because of the relationships between the tables. These relationships help us to keep our databases clean and efficient. A relationship between tables assumes that one of these tables has a `foreign key` that references the `primary key` of another table.
+
+### Types of Relationships
+
+There are 3 primary types of relationships in a relational database:
+
+- One-to-one
+- One-to-many
+- Many-to-many
+
+### One-to-one
+
+```
+One to One
+|--------|    |--------|
+|        |<---|        |
+|        |--->|        |
+|________|    |--------|
+```
+
+A one-to-one relationship most often manifests as a field or set of fields on a row in a table. For example, a user will have exactly one password.
+
+Settings fields might be another example of a one-to-one relationship. A user will have exactly one email_preference and exactly one birthday.
+
+### One to many
+
+```
+One to Many
+              |--------|
+|--------|    |        |
+|        |<---|________|
+|        |
+|________|<---|--------|
+              |        |
+              |________|
+```
+
+A one-to-many relationship occurs when a single record in one table is related to potentially many records in another table.
+
+Note: The one->many relation only goes one way, a record in the second table can not be related to multiple records in the first table!
+
+**Exp of one-to-many relationships**
+
+- A `customers` table and an `orders` table. Each customer has `0`, `1`, or many orders that they've placed.
+- A `users` table and a `transactions` table. Each `user` has `0`, `1`, or many transactions that they've taken part in.
+
+### Many to many
+
+```
+Many to Many
+|--------|     |--------|
+|        |<-|--|        |
+|        |--|->|        |
+|________|  |  |--------|
+            |
+|--------|  |  |--------|
+|        |<-|--|        |
+|        |--|->|        |
+|________|  |  |--------|
+            |
+|--------|  |  |--------|
+|        |<-|--|        |
+|        |--|->|        |
+|________|     |--------|
+```
+
+A many-to-many relationship occurs when multiple records in one table can be related to multiple records in another table.
+
+**Exp of many-to-many relationships**
+
+- A `products` table and a `suppliers` table - Products may have `0` to many suppliers, and suppliers can supply `0` to many products.
+- A `classes` table and a `students` table - Students can take potentially many classes and classes can have many students enrolled.
+
+#### Joining table
+
+Joining tables help define many-to-many relationships between data in a database. As an example when defining the relationship above between `products` and `suppliers`, we would define a joining table called `products_suppliers` that contains the primary keys from the tables to be joined.
+
+Then, when we want to see if a supplier supplies a specific product, we can look in the joining table to see if the ids share a row.
+
+#### Unique Constraint across 2 fields
+
+When enforcing specific schema constraints we may need to enforce the UNIQUE constraint across two different fields.
+
+```sql
+CREATE TABLE product_suppliers (
+  product_id INTEGER,
+  supplier_id INTEGER,
+  UNIQUE(product_id, supplier_id)
+);
+```
+
+This ensures that we can have multiple rows with the same `product_id` or `supplier_id`, but we can't have two rows where both the `product_id` and `supplier_id` are the same.
+
+## DATABASE NORMALIZATION
+
+Database normalization is a method for structuring your database schema in a way that helps:
+
+- Improve data integrity
+- Reduce data redundancy
+
+There are four tiers of database normalization. The different tiers have rules assigned to them, for example 1st NF ( First Normal Formal ) has two rules, and 2st NF has 1 additional rules + rules from 1st NF
+
+- 1st NF:
+  - Every row must have a unique primary key
+  - There can be no nested tables
+- 2st NF:
+  - All columns that are not part of the primary key must only be dependent on the entire primary key
+- 3rd NF:
+  - All the columns not in the primary key are dependent ONLY on the primary key
+- Boyce-Codd NF:
+  - A column that IS part of the primary key may NOT be dependent on a column that is NOT part of the primary key
+
+In the context of database normalization, we're going to use the term "primary key" slightly differently.
+
+When we're talking more generally about data normalization, the term "primary key" means the collection of columns that uniquely identify a row. That can be a single column, but it can actually be any number of columns that form a composite key. A primary key is the minimum number of columns needed to uniquely identify a row in a table.
+
+If you think back to the many-to-many joining table `product_suppliers`, that table's "primary key" was actually a combination of the 2 ids, `product_id` and `supplier_id`:
+
+**What is data integrity?**
+
+"Data integrity" refers to the accuracy and consistency of data. For example, if a user's age is stored in a database, rather than their birthday, that data becomes incorrect automatically with the passage of time.
+
+It would be better to store a birthday and calculate the age as needed.
+
+**What is data redundancy?**
+
+"Data redundancy" occurs when the same piece of data is stored in multiple places. For example: saving the same file multiple times to different hard drives.
+
+Data redundancy can be problematic, especially when data in one place is changed such that the data is no longer consistent across all copies of that data.
+
+**Rules of thumb for database design**
+
+- Every table should always have a unique identifier (primary key)
+- 90% of the time, that unique identifier will be a single column named id
+- Avoid duplicate data
+- Avoid storing data that is completely dependent on other data. Instead, compute it on the fly when you need it.
+- Keep your schema as simple as you can. Optimize for a normalized database first. Only denormalize for speed's sake when you start to run into performance problems.
