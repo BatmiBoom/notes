@@ -935,3 +935,156 @@ Data redundancy can be problematic, especially when data in one place is changed
 - Avoid duplicate data
 - Avoid storing data that is completely dependent on other data. Instead, compute it on the fly when you need it.
 - Keep your schema as simple as you can. Optimize for a normalized database first. Only denormalize for speed's sake when you start to run into performance problems.
+
+## NAMESPACE ON TABLES
+
+When working with multiple tables, you can specify which table a field exists on using a `.`. For example:
+
+`table_name.column_name`
+
+```sql
+SELECT students.name, classes.name
+FROM students
+INNER JOIN classes on classes.class_id = students.class_id;
+```
+
+The above query returns the name field from the students table and the name field from the classes table.
+
+### NAMESPACE ALIAS
+
+A small trick you can do to make writing the SQL query easier is define an alias for each table. Here's an example:
+
+```sql
+SELECT e.name, d.name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.id;
+```
+
+Notice the simple alias declarations `e` and `d` for employees and departments respectively.
+
+## JOINS
+
+One of the most important features that SQL offers. Joins allow us to make use of the relationships we have set up between our tables.
+
+### ON
+
+In order to perform a join, we need to tell the database which fields should be "matched up". The `ON` clause is used to specify these columns to join.
+
+### INNER JOINS
+
+The simplest and most common type of join in SQL is the `INNER JOIN`. By default, a `JOIN` command is an `INNER JOIN`.
+
+- `INNER JOIN` returns all of the records in `table_a` that have matching records in `table_b`
+
+```sql
+SELECT *
+    FROM employees
+    INNER JOIN departments
+    ON employees.department_id = departments.id;
+```
+
+The query above returns all the fields from both tables. The INNER keyword doesn't have anything to do with the number of columns returned - it only affects the number of rows returned.
+
+### LEFT JOIN
+
+A `LEFT JOIN` will return every record from `table_a` regardless of whether or not any of those records have a match in `table_b`. A left join will also return any matching records from `table_b`
+
+### RIGHT JOIN
+
+A `RIGHT JOIN` is, as you may expect, the opposite of a `LEFT JOIN`. It returns all records from `table_b` regardless of matches, and all matching records between the two tables.
+
+### FULL JOIN
+
+A `FULL JOIN` combines the result set of the `LEFT JOIN` and `RIGHT JOIN` commands. It returns all records from both from `table_a` and `table_b` regardless of whether or not they have matches.
+
+### MULTIPLE JOINS
+
+To incorporate data from more than two tables, you can utilize multiple joins to execute more complex queries!
+
+```sql
+SELECT *
+FROM employees
+LEFT JOIN departments
+ON employees.department_id = departments.id
+INNER JOIN regions
+ON departments.region_id = regions.id
+```
+
+## PERFORMANCE
+
+### INDEXES
+
+An index is an in-memory structure that ensures that queries we run on a database are performant, that is to say, they run quickly. Most database indexes are just binary trees or B-trees! The binary tree can be stored in ram as well as on disk, and it makes it easy to lookup the location of an entire row
+
+`PRIMARY KEY` columns are indexed by default, ensuring you can look up a row by its `id` very quickly. However, if you have other columns that you want to be able to do quick lookups on, you'll need to index them.
+
+### CREATE INDEX
+
+`CREATE INDEX index_name on table_name (column_name);`
+
+It's fairly common to name an index after the column it's created on with a suffix of `_idx`.
+
+```sql
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    email TEXT,
+    name TEXT,
+    age INTEGER
+);
+
+CREATE INDEX email_idx on users (email);
+```
+
+By indexing a column, we create a new in-memory structure, usually a binary-tree, where the values in the indexed column are sorted into the tree to keep lookups fast. In terms of Big-O complexity, a binary tree index ensures that lookups are `O(log(n))`.
+
+While indexes make specific kinds of lookups much faster, they also add performance overhead - they can slow down a database in other ways. It also means that each time you insert a record, that record needs to be added to many trees - slowing down your insert speed.
+
+> Add an index to columns you know you'll be doing frequent lookups on. Leave everything else un-indexed. You can always add indexes later.
+
+### MULTI-COLUMN INDEXES
+
+Are useful for the exact reason you might think - they speed up lookups that depend on multiple columns.
+
+```sql
+CREATE INDEX first_name_last_name_age_idx
+ON users (first_name, last_name, age);
+```
+
+A multi-column index is sorted by the first column first, the second column next, and so forth. A lookup on only the first column in a multi-column index gets almost all of the performance improvements that it would get from its own single-column index. However, lookups on only the second or third column will have very degraded performance.
+
+> Unless you have specific reasons to do something special, only add multi-column indexes if you're doing frequent lookups on a specific combination of columns.
+
+### DENORMALIZING FOR SPEED
+
+As it turns out, data integrity and deduplication come at a cost, and that cost is usually speed.
+
+Joining tables together, using subqueries, performing aggregations, and running calculations take time.
+
+Storing duplicate information can drastically speed up an application that needs to look it up in different ways.
+
+> It should be used as a kind of "last resort" in the name of speed.
+
+## SQL INJECTION
+
+SQL is a very common way hackers attempt to cause damage or breach a database.
+
+We have this query:
+
+```sql
+INSERT INTO students(name) VALUES (?);
+```
+
+And we receive the value from a `stdin`
+
+`'Robert'); DROP TABLE students;--`
+
+Then the resulting SQL query would look like this:
+
+```sql
+INSERT INTO students(name) VALUES ('Robert'); DROP TABLE students;--)
+```
+
+As you can see, this is actually 2 queries! The first one inserts "Robert" into the database, and the second one deletes the students table!
+
+The solution is to sanitize SQL inputs.
