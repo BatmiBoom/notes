@@ -39,7 +39,7 @@ At the heart of HTTP is a simple request-response sysetm. The "requesting" compu
 
 A URL, or **Uniform Resource Locator**, is essentially the address of another computer, or "server" on the internet. Part of the URL specifies how to reach the server, and part of it tells the server what information we want.
 
-The `http://` at the beginnnig of a website URL specifies that the `http` prrotocol will be used for communication.
+The `http://` at the beginning of a website URL specifies that the `http` protocol will be used for communication.
 
 Other communication protocols use URLs as well, (hence "Uniform Resource Locator").
 
@@ -309,7 +309,11 @@ The `GET` method is used to 'get' a representation of a specified resource. You 
 
 ## HTTP POST
 
-A `POST` request is typically sent via an HTML form and results in a change on the server.
+An `POST` request sends data to a server, typically to create a new resource.
+
+The `body` of the request is the payload sent to the server. The special `Content-Type` header is used to tell the server the format of the body: `application/json` for JSON data in our case.
+
+`POST` requests are generally not safe methods to call multiple times because that would create duplicate records. For example, you wouldn't want to accidentally send a tweet twice.
 
 The difference between `PUT` and `POST` is that `PUT` is idempotent: calling it once or several times successively has the same effect (that is no side effect), where successive identical POST may have additional effects, like passing an order several times.
 
@@ -339,8 +343,8 @@ When looking at requests we can check on the Status Code of the request to get s
 
 ## RESTFUL APIS
 
-[ini](./restful_apis.md)
+[rest](./restful_apis.md)
 
 ## HTTPS
 
-[ini](./https.md)
+[https](./https.md)

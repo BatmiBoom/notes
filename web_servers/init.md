@@ -41,3 +41,120 @@ Generally speaking, Python application code only processes a single request at a
 The only reason this isn't completely debilitating is there is a separate WSGI process (for example uwsgi) that handles the concurrency of the application code. It can spawn multiple processes of the Python application to handle different requests at once.
 
 In other words, uwsgi + Flask or uwsgi + Django are both needed to handle the same things that a single Node.js or Go server does alone.
+
+## FILE SERVERS
+
+A _file-server_ is a kind of simple web server that serves static files from the host machine. File-servers are often used to serve static assets for a website, things like:
+
+- HTML
+- CSS
+- JavaScript
+- Images
+
+## Workflow tips
+
+Servers are interesting because they're always running. They run forever, waiting for requests to come in, processing them, sending responses, and then waiting for the next request.
+
+## Debugging a server
+
+The simplest way (minimal tooling) is to:
+
+- Write some code
+- Build and run the code
+- Send a request to the server using a browser or some other HTTP client
+- See if it did what you expected.
+- If it didn't, add some logging or fix the code, and go back to step 2.
+
+## Restarting a server
+
+I usually use a single command to build and run my servers, assuming I'm in my main package directory:
+
+```console
+go run .
+```
+
+This builds the server and runs it in one command.
+
+## Custom Handlers
+
+We have been using the `http.FileServer` function, which simply returns a built-in http.Handler.
+
+An `http.Handler` is just an interface:
+
+```go
+type Handler interface {
+	ServeHTTP(ResponseWriter, *Request)
+}
+```
+
+Any type with a `ServeHTTP` method that matches the `http.HandlerFunc` signature above is an `http.Handler`. **To handle an incoming HTTP request, all a function needs is a way to write a response and the request itself.**
+
+**Readiness endpoints are commonly used by external systems to check if our server is ready to receive traffic.**
+
+I recommend using the `mux.HandleFunc` to register your handler. Your handler can just be a function that matches the signature of `http.HandlerFunc`:
+
+```go
+handler func(http.ResponseWriter, *http.Request)
+```
+
+## STATEFUL HANDLERS
+
+It's frequently useful to have a way to store and access state in our handlers. For example, we might want to keep track of the number of requests we've received, or we may want to pass around an open connection to a database, or credentials to an API.
+
+### STEPS
+
+Create a `struct` that will hold any stateful, in-memory data we'll need to keep track of.
+
+```go
+type apiConfig struct {
+	fileserverHits int
+}
+```
+
+Next, write a new middleware method on a `*apiConfig` that increments the `fileserverHits` counter every time it's called. Here's the method signature I used:
+
+```go
+func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
+	// ...
+}
+```
+
+Wrap the `http.FileServer` handler with the middleware method we just wrote. For example:
+
+```go
+mux.Handle("/app/*", apiCfg.middlewareMetricsInc(handler))
+```
+
+Create a new handler that writes the number of requests that have been counted as plain text in this format to the HTTP response:
+
+`Hits: x`
+
+Where x is the number of requests that have been processed. This handler should be a method on the `*apiConfig struct` so that it can access the `fileserverHits` data.
+
+## MIDDLEWARE
+
+Middleware is a way to wrap a handler with additional functionality. It is a common pattern in web applications that allows us to write DRY code. For example, we can write a middleware that logs every request to the server. We can then wrap our handler with this middleware and every request will be logged without us having to write the logging code in every handler.
+
+## ROUTING - PATTERNS
+
+A pattern is a string that specifies the set of URL paths that should be matched to handle HTTP requests. Go's `ServeMux` router uses these patterns to dispatch requests to the appropriate handler functions based on the URL path of the request. As we saw in the previous lesson, patterns help organize the handling of different routes efficiently.
+
+As previously mentioned, patterns generally look like this: `[METHOD ][HOST]/[PATH]`. Note that all three parts are optional.
+
+### Rules and Definitions
+
+#### Fixed URL Paths
+
+A pattern that exactly matches the URL path. For example, if you have a pattern /about, it will match the URL path /about and no other paths.
+
+#### Subtree Paths
+
+If a pattern ends with a slash /, it matches all URL paths that have the same prefix. For example, a pattern `/images/` matches `/images/`, `/images/logo.png`, and `/images/css/style.css`. As we saw with our `/app/*` path, this is useful for serving a directory of static files or for structuring your application into sub-sections.
+
+#### Longest Match Wins
+
+If more than one pattern matches a request path, the longest match is chosen. This allows more specific handlers to override more general ones. For example, if you have patterns `/` (root) and `/images/`, and the request path is `/images/logo.png`, the `/images/` handler will be used because it's the longest match.
+
+#### Host-specific Patterns
+
+We won't be using this but be aware that patterns can also start with a `hostname`.This allows you to serve different content based on the Host header of the request. If both host-specific and non-host-specific patterns match, the host-specific pattern takes precedence.
