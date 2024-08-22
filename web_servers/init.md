@@ -135,6 +135,19 @@ Where x is the number of requests that have been processed. This handler should 
 
 Middleware is a way to wrap a handler with additional functionality. It is a common pattern in web applications that allows us to write DRY code. For example, we can write a middleware that logs every request to the server. We can then wrap our handler with this middleware and every request will be logged without us having to write the logging code in every handler.
 
+### ROUTING
+
+The Go standard library has a lot of powerful HTTP features and comes equipped with method-based pattern matching for routing.
+
+There are other powerful routing libraries like `Gorilla Mux` and `Chi`.
+
+We can limit which endpoints are available via which HTTP methods.
+
+```go
+mux.HandleFunc("POST /articles", handlerArticlesCreate)
+mux.HandleFunc("DELETE /articles", handlerArticlesDelete)
+```
+
 ## ROUTING - PATTERNS
 
 A pattern is a string that specifies the set of URL paths that should be matched to handle HTTP requests. Go's `ServeMux` router uses these patterns to dispatch requests to the appropriate handler functions based on the URL path of the request. As we saw in the previous lesson, patterns help organize the handling of different routes efficiently.
@@ -158,3 +171,45 @@ If more than one pattern matches a request path, the longest match is chosen. Th
 #### Host-specific Patterns
 
 We won't be using this but be aware that patterns can also start with a `hostname`.This allows you to serve different content based on the Host header of the request. If both host-specific and non-host-specific patterns match, the host-specific pattern takes precedence.
+
+When a request is made to one of these endpoints with a method other than GET, the server should return a 405 (Method Not Allowed) response (this is handled automatically!).
+
+## Admin Namespace
+
+One of the advantages of a monolithic architecture is that it's fairly simple to inject data directly into the HTML of a web page.
+
+## Deployment Options
+
+### Monolithic deployment
+
+Deploying a monolith is straightforward. Because your server is just one program, you just need to get it running on a server that's exposed to the internet and point your DNS records to it.
+
+You could upload and run it on classic server, something like:
+
+- AWS EC2
+- GCP Compute Engine (GCE)
+- Digital Ocean Droplets
+- Azure Virtual Machines
+
+Alternatively, you could use a platform that's specifically designed to run web applications, like:
+
+- Heroku
+- Google App Engine
+- Fly.io
+- AWS Elastic Beanstalk
+
+### Decoupled deployment
+
+With a decoupled architecture, you have two different programs that need to be deployed. You would typically deploy your back-end to the same kinds of places you would deploy a monolith.
+
+For your front-end server, you can do the same, or you can use a platform that's specifically designed to host static files and server-side rendered front-end apps, something like:
+
+- Vercel
+- Netlify
+- GitHub Pages
+
+Because the front-end bundle is likely just static files, you can host it easily on a CDN (Content Delivery Network) inexpensively.
+
+### More powerful options
+
+    If you want to be able to scale your application up and down in specific ways, or you want to add other back-end servers to your stack, you might want to look into container orchestration options like Kubernetes and Docker Swarm.
