@@ -102,3 +102,89 @@ Now we have to make a decision. Do we generate instructions for a real CPU or a 
 Speaking the chip’s language also means your compiler is tied to a specific architecture. If your compiler targets x86 machine code, it’s not going to run on an ARM device.
 
 Instead of instructions for some real chip, we can produced code for a hypothetical, idealized machine. We generally call this bytecode because each instruction is often a single byte long.
+
+### Virtual Machine
+
+If your compiler produces bytecode, since there is no chip that speaks that bytecode, it's your job to translate. We have two options:
+
+- We can write a little mini-compiler for each target architecture that converts the bytecode to native code for that machine.
+- We can write a **virtual machine** (VM), a program that emulates a hypothetical chip supporting your virtual architecture at runtime.
+
+Running bytecode in a VM is slower that translating it to native code ahead of time because every instruction must be simulated at runtime each time it executes. In return, you get simplicity and portability. Implement your VM in C and you can run your language on any platform that has a C compiler. This is how the second interpreter we build in this book works.
+
+> The term “virtual machine” also refers to a different kind of abstraction. A system virtual machine emulates an entire hardware platform and operating system in software. This is how you can play Windows games on your Linux machine, and how cloud providers give customers the user experience of controlling their own “server” without needing to physically allocate separate computers for each user.
+
+> The kind of VMs we’ll talk about in this book are language virtual machines or process virtual machines if you want to be unambiguous.
+
+### Runtime
+
+At this point we have hammered the user's program into a form that we can execute. The last step is running it. If we compiled it to machine code, we simply tell the operating system to load the executable and off it goes. If we compiled it to bytecode, we need to start up the VM and load the program into that.
+
+In both cases, we usually need some services that our language provides while the program is running. For example, if the language automatically manages memory, we need a garbage collector going in order to reclaim unused bits. If our language supports “instance of” tests so you can see what kind of object you have, then we need some representation to keep track of the type of each object during execution.
+
+All of this stuff is going at runtime. In a fully compiled language, the code implementing the runtime gets inserted directly into the resulting executable. In, say, Go, each compiled application has its own copy of Go’s runtime directly embedded in it. If the language is run inside an interpreter or VM, then the runtime lives there. This is how most implementations of languages like Java, Python, and JavaScript work.
+
+## Shortcuts and Alternate Routes
+
+That’s the long path covering every possible phase you might implement. Many languages do walk the entire route, but there are a few shortcuts and alternate paths.
+
+### Single-pass compilers
+
+Some simple compilers interleave parsing, analysis, and code generation so that they produce output code directly in the parser, without ever allocating any syntax trees or other IRs. These single-pass compilers restrict the design of the language. You have no intermediate data structures to store global information about the program, and you don’t revisit any previously parsed part of the code. That means as soon as you see some expression, you need to know enough to correctly compile it.
+
+> Syntax-directed translation is a structured technique for building these all-at-once compilers. You associate an action with each piece of the grammar, usually one that generates output code. Then, whenever the parser matches that chunk of syntax, it executes the action, building up the target code one rule at a time.
+
+### Tree-Walk interpreters
+
+Some programming languages begin executing code right after parsing it to an AST (with maybe a bit of static analysis applied). To run the program, the interpreter traverses the syntax tree one branch and leaf at a time, evaluating each node as it goes.
+
+This implementation style is common for student projects and little languages, but is not widely used for general-purpose languages since it tends to be slow. Some people use “interpreter” to mean only these kinds of implementations. Our first interpreter rolls this way.
+
+### Transpilers
+
+Writing a complete back end for a language can be a lot of work. If you have some existing generic IR to target, you could bolt your front end onto that. But if you don't have that you can treated some other language as if it were an intermediate representation?
+
+You write a front end for your language. Then, in the back end, instead of doing all the work to lower the semantics to some primitive target language, you produce a string of valid source code for some other language that's about as high level as yours. Then, you use the existing compilation tools for that language as your escape route off the mountain and down to something you can execute.
+
+They use to call this a **source-to-source compiler** or a **transcompiler**.
+
+The front end — scanner and parser — of a transpiler looks like other compilers. Then, if the source language is only a simple syntactic skin over the target language, it may skip analysis entirely and go straight to outputting the analogous syntax in the destination language.
+
+If the two languages are more semantically different, you’ll see more of the typical phases of a full compiler including analysis and possibly even optimization. Then, when it comes to code generation, instead of outputting some binary language like machine code, you produce a string of grammatically correct source code in the target language.
+
+### Just-in-time compilation
+
+This last one is less a shortcut and more a dangerous alpine scramble best reserved for experts. The fastest way to execute code is by compiling it to machine code, but you might not know what architecture your end user’s machine supports.
+
+You can do the same thing that the JVM, and most JavaScript interpreters do. On the end user’s machine, when the program is loaded — either from source in the case of JS, or platform-independent bytecode for the JVM — you compile it to native code for the architecture their computer supports. Naturally enough, this is called just-in-time compilation. Most hackers just say “JIT”
+
+The most sophisticated JITs insert profiling hooks into the generated code to see which regions are most performance critical and what kind of data is flowing through them. Then, over time, they will automatically recompile those hot spots with more advanced optimizations.
+
+> This is, of course, exactly where the HotSpot JVM gets its name.
+
+## Compilers and Interpreters
+
+- Compiling is an implementation technique that involves translating a source language to some other. When you generate bytecode or machine code, you are compiling. When you transpile to another high-level language, you are compiling too.
+- When we say a language implementation “is a compiler”, we mean it translates source code to some other form but doesn’t execute it. The user has to take the resulting output and run it themselves.
+- Conversely, when we say an implementation “is an interpreter”, we mean it takes in source code and executes it immediately. It runs programs “from source”.
+
+Some implementations are clearly compilers and not interpreters. GCC and Clang take your C code and compile it to machine code. An end user runs that executable directly and may never even know which tool was used to compile it. So those are compilers for C.
+
+In older versions of Matz’s canonical implementation of Ruby, the user ran Ruby from source. The implementation parsed it and executed it directly by traversing the syntax tree. No other translation occurred, either internally or in any user-visible form. So this was definitely an interpreter for Ruby.
+
+But what of CPython? When you run your Python program using it, the code is parsed and converted to an internal bytecode format, which is then executed inside the VM. From the user’s perspective, this is clearly an interpreter — they run their program from source. But if you look under CPython’s scaly skin, you’ll see that there is definitely some compiling going on.
+
+The answer is that it is both. CPython is an interpreter, and it has a compiler. In practice, most scripting languages work this way, as you can see:
+
+| Compiler    | Interpreter | Both    |
+| ----------- | ----------- | ------- |
+| javac       | MRI (Ruby)  | C#      |
+| gcc         | jlox        | Haskell |
+| typescript  | PHP3        | Lua     |
+| coffescript |             | clox    |
+| rust        |             | Go      |
+| clang       |             | PHP4    |
+
+That overlapping region in the center is where our second interpreter lives too, since it internally compiles to bytecode. So while this book is nominally about interpreters, we’ll cover some compilation too.
+
+[LOX LANGUAGE](./lox.md)

@@ -2,51 +2,19 @@
 
 An algorithm is a fancy word that essentially means "good instructions". Here's an example of a simple algorithm that explains how to find the smallest number in a list.
 
+- [Basics](./basics_algorithms.md)
 - [Sorting Algorithms](./sorting_algorithms.md)
 - [N vs NP](./n_vs_np.md)
 - [Breadth First Search](./breadth_first_search.md)
 - [Depth Fist Search](./depth_first_search.md)
 
-## Algorithms find minimum
-
-1. Set `minimum` to positive infinity: `float("inf")`
-1. For each number in the list `nums`, compare it to `minimum`. If `num` is smaller, set `minimum` to `num`
-1. `minimum` is now set to the smallest number in the list.
-
-```python
-def find_minimum(nums):
-    min_for_now = float("inf")
-
-    for n in nums:
-        if n < min_for_now:
-            min_for_now = n
-
-    return min_for_now
-```
-
-In math and programming, an algorithm is a finite sequence of well-defined, computer-implementable instructions. Algorithms are always unambiguos and are used as specifications for real world implementations
+In math and programming, an algorithm is a finite sequence of well-defined, computer-implementable instructions. Algorithms are always unambiguous and are used as specifications for real world implementations
 
 In short, an algorithm is:
 
 - Defined: there are a specific sequence of steps that performs a task
 - Unambiguous: there is a "correct" and "incorrect" interpretation of the steps
 - Implementable: it can be implemented in code or using hardware
-
-## Median algorithm
-
-```python
-def median_followers(nums):
-    n = len(nums)
-    sorted_list = sorted(nums)
-
-    if n == 0:
-        return 0
-
-    if n % 2 == 0:
-        return (sorted_list[n//2 - 1] + sorted_list[n//2]) / 2
-
-    return sorted_list[n//2]
-```
 
 ## Exponents
 
