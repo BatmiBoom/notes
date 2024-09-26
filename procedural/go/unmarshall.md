@@ -44,7 +44,7 @@ func Unmarshal(data []byte, v interface{}) error
 
 Similarly, the `json.Unmarshal()` function takes some encoded `JSON` data and a pointer to a value where the encoded `JSON` should be written, and returns an error if something goes wrong.
 
-```main.go
+```go
 dat := []byte(`{
     "first_name":"Lane",
     "birth_year":1990,
@@ -54,7 +54,7 @@ dat := []byte(`{
 user := User{}
 err := json.Unmarshal(dat, &user)
 if err != nil {
-    fmt.Println(err)
+    fm.Println(err)
 }
 
 fmt.Println(user)
