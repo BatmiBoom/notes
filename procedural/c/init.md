@@ -1,0 +1,18 @@
+# C
+
+- [Cheatsheet](./syntax.c)
+- [Basics](./basics.md)
+- [Structs](./structs.md)
+- [Memory](./memory.md)
+- [Pointers](./pointers.md)
+  - [Arrays](./arrays.md)
+  - [Strings](./strings.md)
+- [Forward Declaration](./forward_declaration.md)
+- [Enums](./enums.md)
+- [Union](./unions.md)
+- [The Stack](./the_stack.md)
+- [The Heap](./the_heap.md)
+- [Malloc and Free](./malloc_free.md)
+- [Stack Data Structure](./stack_data_structure.md)
+- [Building a GC](./gc.md)
+- [Objects](./objects.md)

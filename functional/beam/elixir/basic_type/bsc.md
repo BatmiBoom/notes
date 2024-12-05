@@ -15,6 +15,8 @@ You can use a `?` in front of a character literal to reveal its code point:
 ?ł # 322
 ```
 
+`?\s` represents the space character `" "`, but in its integer form. Characters that start with `?` are converted to their Unicode code points. `?\s` == `32`, which is the ASCII code for the space character.
+
 We refer to a code point by its hex representation
 We can represent any Unicode character in an string by using the `\uXXXX` notation and the hex representation of its code point number:
 
@@ -252,8 +254,4 @@ The `String` module contains a bunch of functions that operate on strings as def
 
 ```elixir
 String.upcase("hellö") # "HELLÖ"
-```
-
-```
-
 ```
