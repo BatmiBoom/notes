@@ -38,7 +38,7 @@ sudo ln -s /usr/bin/python3 /usr/bin/python
 
 # Node
 sudo apt install nodejs
-npm install -g neovim
+sudo apt install npm
 
 # Go
 sudo apt install golang-go
