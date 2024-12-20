@@ -70,4 +70,5 @@ opam init
 
 # NVIM
 sudo apt-get install python3-neovim
+sudo apt-get install python3-venv
 sudo snap install --edge nvim --classic
