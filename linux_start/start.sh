@@ -20,6 +20,9 @@ sudo apt update
 sudo apt install -y powershell
 # chs /usr/bin/pwsh
 
+# Cmake
+sudo snap install cmakel
+
 # Git
 sudo apt install git
 
@@ -45,7 +48,7 @@ curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
 
 # Zig
 
-sudo snap zig --classic --beta
+sudo snap install zig --classic --beta
 
 # Lua
 sudo apt install lua5.4
@@ -59,15 +62,12 @@ sudo apt install erlang-dev erlang-xmerl
 sudo apt install elixir
 
 # Gleam
-cd /tmp
-git clone https://github.com/gleam-lang/gleam.git 
-cd gleam
-make install
+cd /tmp & git clone https://github.com/gleam-lang/gleam.git & cd gleam & make install & mv target/release/gleam /usr/loca/bin
 
 # Ocaml
 bash -c "sh <(curl -fsSL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)"
 opam init
 
 # NVIM
-
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
+sudo apt-get install python3-neovim
+sudo snap install --edge nvim --classic
