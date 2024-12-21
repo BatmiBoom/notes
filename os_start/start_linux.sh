@@ -128,6 +128,9 @@ sudo apt-get install clang-format clang-tidy clang-tools clang clangd libc++-dev
 ## Delta
 cargo install git-delta
 
+# Docker
+sudo snap install docker
+
 # NVIM
 sudo apt-get install python3-neovim
 sudo apt-get install python3-venv
