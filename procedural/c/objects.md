@@ -146,3 +146,8 @@ object_t *new_string(char *value) {
 
 - [Vector 3](./objects_vector3.md)
 - [Array](./objects_array.md)
+
+## GC
+
+- [Refcounting](./objects_gc_refcounting.md)
+- [Mark and Sweep](./objects_gc_mark_and_sweep.md)

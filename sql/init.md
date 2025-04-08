@@ -2,6 +2,10 @@
 
 Structured Query Language, or SQL, is the primary programming language used to manage and interact with relational databases. SQL can perform various operations such as creating, updating, reading, and deleting records within a database.
 
+## Connection String
+
+`protocol://username:password@host:port/database?sslmode=disable`
+
 ## Which databases use SQL?
 
 SQL is just a query language. You typically use it to interact with a specific database technology. For example:
@@ -146,13 +150,17 @@ _ALL_ statements end with a semi-colon `;`.
 
 ## MIGRATIONS
 
-A database migration is a set of changes to a relational database. In fact, the `ALTER TABLE` statements are examples of migrations!
+A database migration is a set of changes to a relational database. You can have as many migrations as needed as your requirements change over time. For example, one migration might create a new table, one might delete a column, and one might add 2 new columns.
 
 Migrations are helpful when transitioning from one state to another, fixing mistakes, or adapting a database to changes.
 
 Good migrations are _small_, _incremental_ and _reversible_ changes to a database.
 
-When writing reversible migrations, we use the terms `up` and `down` migrations. An `up` migration is simply the set of changes you want to make, like altering/removing/adding/editing a table in some way. A `down` migration includes the changes that would revert any of the `up` migration's changes.
+When writing reversible migrations, we use the terms `up` and `down` migrations.
+
+An `up` migration moves the state of the database from its current schema to the schema that you want. So, to get a "blank" database to the state it needs to be ready to run your application, you run all the "up" migrations.
+
+If something breaks, you can run one of the `down` migrations to revert the database to a previous state. "Down" migrations are also used if you need to reset a local testing database to a known state.
 
 ## SQL DATA TYPES
 
